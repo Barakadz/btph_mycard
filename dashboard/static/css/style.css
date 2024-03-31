@@ -1,0 +1,53 @@
+*{
+	color: white !important;
+ 
+}
+body{
+	 color: white;
+	 background-color: #242943 !important; /* Set your desired background color here */
+
+}
+.dataTable {
+background-color: #242943 !important; /* Set your desired background color here */
+} 
+
+
+
+
+.dataTables_wrapper .dataTable thead th:nth-child(1),
+.dataTables_wrapper .dataTable tbody td:nth-child(1) {
+	background-color: #242943 !important; /* Light gray background */
+}
+
+.dataTables_wrapper .dataTable thead th:nth-child(2),
+.dataTables_wrapper .dataTable tbody td:nth-child(2) {
+	background-color: #242943 !important ; /* Light blue background */
+}
+.dataTables_wrapper .dataTable thead th:nth-child(3),
+.dataTables_wrapper .dataTable tbody td:nth-child(3) {
+	background-color: #242943 !important ; /* Light blue background */
+}
+.dataTables_wrapper .dataTable thead th:nth-child(4),
+.dataTables_wrapper .dataTable tbody td:nth-child(4) {
+	background-color: #242943 !important ; /* Light blue background */
+}
+.dataTables_wrapper .dataTable thead th:nth-child(5),
+.dataTables_wrapper .dataTable tbody td:nth-child(5) {
+	background-color: #242943 !important ; /* Light blue background */
+}
+.dataTables_wrapper .dataTable thead th:nth-child(6),
+.dataTables_wrapper .dataTable tbody td:nth-child(6) {
+	background-color: #242943 !important ; /* Light blue background */
+}
+.dataTables_wrapper .dataTable thead th:nth-child(7),
+.dataTables_wrapper .dataTable tbody td:nth-child(7) {
+	background-color: #242943 !important ; /* Light blue background */
+}
+input[type=text],option,select,input[type=file]
+{
+color: black !important;
+background-color: white !important;
+
+}
+h1{color: black !important;}
+

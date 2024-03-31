@@ -1,0 +1,601 @@
+<!doctype html>
+<html>
+<head>
+<title>My Card</title>
+<link rel="stylesheet" href="{{url_for('dashboard.static',filename='css/bootstrap.min.css')}}"/>
+<link rel="stylesheet" href="{{url_for('dashboard.static',filename='css/style.css')}}"/>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+ <link href='https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.js"></script>
+<link rel="stylesheet" href="{{url_for('dashboard.static',filename='css/style.css')}}"/>
+ <style>
+    .swal2-title {
+      font-size: 24px !important; /* Adjust font size */
+      color: #ff0000 !important; /* Change font color */
+      font-weight: bold !important; /* Make it bold */
+      text-transform: uppercase; /* Uppercase text */
+    }
+ </style>
+</head>
+<body >
+<div class="container" >
+    <div class="row" style="padding:50px;">
+         <div >
+ 
+
+          <center><button  class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#exampleModall">Ajouter un Sous traitont</button></center>
+          <!-- Modal -->
+<div class="modal fade" id="exampleModall" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog ">
+<div class="modal-content">
+<div class="modal-header">
+<h1 class="modal-title fs-5" id="exampleModalLabel">Sous traitont </h1>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form method="post" action="" id="addUser" enctype="multipart/form-data">
+
+<div class="modal-body">
+   <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black" >Nom et prénom :<b style="color:red">*</b></label>
+      <input type="text" class="form-control" id="username" placeholder="Enter votre Nom et prénom" maxlength="60" required>
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Fonction :<b style="color:red">*</b></label>
+      <input type="text" class="form-control" id="fonction" placeholder="Enter votre Fonction"  maxlength="70" required>
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Nom de l'entreprise :<b style="color:red">*</b></label>
+      <input type="text" class="form-control" id="nom_entreprise" placeholder="Example votre nom de l'entreprise"  maxlength="70" required>
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Groupe s. :<b style="color:red">*</b></label>
+       <select name="" id="groupe_s" class="form-select" required>
+          <option value=""></option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+
+      </select>
+  </div>
+    
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
+      <input type="file" class="form-control" name="file" id="file">
+    </div>
+    <center><button type="submit" class="btn btn-primary">Ajouter</button>
+    </center>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+</div>
+</div>
+</div>
+</div>
+</form>
+
+            <table id='empTable' class='display dataTable' width='100%' style="background-color: #242943;">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Image</th>
+                    <th>Fonction</th>
+                    <th>Groupe_s</th>
+                    <th>Nom_entreprise</th>
+
+                    <th>Options</th>
+
+                </tr>
+                </thead>
+                 
+            </table>
+        </div>
+   </div>
+</div>
+<script>
+$(document).ready(function() {
+ 
+  
+    var empDataTable = $('#empTable').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'serverMethod': 'post',
+                'ajax': {
+                    'url':'/admin/ajaxfile'
+                },
+               
+                searching: true,
+                sort: false,
+                columnDefs: [ {
+       targets: -1,
+       visible: true
+   } ],
+   lengthMenu:[[ 25,50,100,200],[25,50,100,200]],
+ 
+   language: {
+ url: '/admin/French.json'
+},          
+"paging": true,
+  "lengthChange": true,
+  "searching": true,
+  "ordering": true,
+  "info": true,
+  "autoWidth": true,
+  "responsive": true,
+                "serverSide": true,
+                'columns': [
+                    { data: 'id' },
+                    { data: 'username' },
+                    {
+                        data: "image",
+                        render: function(data, type, row) {
+                          
+                          return '<img src="{{ url_for("dashboard.static", filename="images/") }}' + data + '"class="img-thumbnail">';
+                        }
+                    },
+                    { data: 'fonction' },
+                    { data: 'nom_entreprise' },
+                    { data: 'nom_entreprise' },
+
+                    { data: 'delete' },
+                ]
+            });
+ 
+});
+ 
+
+
+$('#empTable').on('click', '.deleteBtn ', function(e) {
+    e.preventDefault();
+      var id = $(this).data('id');
+ 
+      Swal.fire({
+  title: "<h5 style='color:black !important'>voulez-vous supprimer cet sous traitont?</h5>",
+  showDenyButton: "Non",
+  showCancelButton: true,
+  confirmButtonText: "Oui",
+ }).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+    
+  
+  $.ajax({
+  url: '/admin/delete/' + id,
+  type: 'DELETE',
+  success: function(data) {
+      var json = JSON.stringify(data);
+      mytable = $('#empTable').DataTable();
+
+mytable.draw();
+
+var statuse = json.status;
+
+
+
+swal.fire({
+title: "Sous traitont à été bien supprimer" ,
+text: "",
+icon: "success",
+buttons: true,
+dangerMode: true,
+})
+
+
+  },
+  error: function(xhr, status, error) {
+      console.error(xhr.responseText);
+      // Handle error response
+  }
+});
+  
+ 
+
+  } 
+});
+
+
+
+
+
+
+
+
+ 
+   
+ 
+})
+
+
+
+
+
+$('#empTable').on('click', '.badge ', function(e) {
+    e.preventDefault();
+      var id = $(this).data('id');
+      var username = $(this).data('username');
+      var image = $(this).data('image');
+      var fonction = $(this).data('fonction');
+      var nom_entreprise = $(this).data('nom_entreprise');
+       var groupe = $(this).data('grouppe');
+
+      $.ajax({
+
+url: "/admin/image/",
+
+type: "post",
+
+data: {
+
+    username: username,
+    image:image,
+    fonction: fonction,
+    nom_entreprise: nom_entreprise ,
+     groupe:groupe
+},
+       
+
+success: function(data) {
+  window.location.href = "/admin/badge/" + encodeURIComponent(username+'.jpg');
+
+
+
+        }
+
+      });
+
+   
+ 
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).on('submit', '#addUser', function(e) {
+ e.preventDefault();
+ 
+var username = $('#username').val();
+var fonction = $('#fonction').val();
+var nom_entreprise = $('#nom_entreprise').val();
+var groupe_s = $('#groupe_s').val();
+ var fileInput = $('#file')[0]; // Get the file input element
+var file = fileInput.files[0]; // Get the selected file
+
+var numberPattern = /^[0-9]+$/;
+ if(groupe_s==''){
+
+  swal.fire({
+title: "il faut choisir le Groupe s " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+ }else if( username == ''){
+
+swal.fire({
+title: "il faut remplir le nom & prénom " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+
+} 
+else if( fonction == ''){
+swal.fire({
+title: "il faut remplir votre fonction " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+}
+
+else if( nom_entreprise == ''){
+swal.fire({
+title: "il faut remplir le nom d'entreprise " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+
+}  
+else if( groupe_s == ''){
+swal.fire({
+title: "il faut remplir le groupe_s  " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+
+}  
+  else if (username != ''     &&fonction != '' && nom_entreprise != ''&& groupe_s != ''  ) {
+ 
+
+ 
+  var formData = new FormData();
+  formData.append('username', username);
+  formData.append('fonction', fonction);
+  formData.append('nom_entreprise', nom_entreprise);
+  formData.append('groupe_s', groupe_s);
+   formData.append('file', file);
+
+  $.ajax({
+    url: "/admin/add",
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+           
+
+    success: function(response) {
+      mytable = $('#empTable').DataTable();
+
+mytable.draw();
+ // Accéder à la valeur de status
+ var status = response.status;
+ if(status=='true'){
+
+  swal.fire({
+title: "<h3 style='color:black !important'>Sous traitons, c'était Bien Ajouté</h3>" ,
+text: "",
+icon: "success",
+buttons: true,
+dangerMode: true,
+})
+ }else{
+
+  swal.fire({
+title: "<h3 style='color:black !important'>cet sous traitont est déjà existé</h3>" ,
+text: "",
+icon: "error",
+buttons: true,
+showCancelButton: true,
+dangerMode: true,
+})
+ }
+            }
+
+          });
+
+        }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+$('#empTable').on('click', '.editbtn ', function(event) {
+      var table = $('#example').DataTable();
+      var trid = $(this).closest('tr').attr('id');
+      var id = $(this).data('id');
+      var username = $(this).data('username');
+      var image = $(this).data('image');
+      var fonction = $(this).data('fonction');
+      var nom_entreprise = $(this).data('nom_entreprise');
+       var groupe_ss = $(this).data('groupes');
+      var id = $(this).data('id');
+
+      $('#modalmodifier').modal('show');
+      $('#id').val(id);
+      $('#usernamee').val(username);
+      $('#imagee').val(image);
+      $('#fonctionn').val(fonction);
+      $('#nom_entreprisee').val(nom_entreprise);
+       $('#groupe_ss').val(groupe_ss);
+    });
+
+
+    $(document).on('submit', '#modifiedUser', function(e) {
+ e.preventDefault();
+ 
+ 
+ 
+ var id = $('#id').val();
+var username = $('#usernamee').val();
+var fonction = $('#fonctionn').val();
+var nom_entreprise = $('#nom_entreprisee').val();
+var groupe_s = $('#groupe_ss').val();
+ var fileInput = $('#filee')[0]; // Get the file input element
+var file = fileInput.files[0]; // Get the selected file
+
+var numberPattern = /^[0-9]+$/;
+ if(groupe_s==''){
+
+  swal.fire({
+title: "il faut choisir le Groupe s " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+ }else if( username == ''){
+
+swal.fire({
+title: "il faut remplir le nom & prénom " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+
+} 
+else if( fonction == ''){
+swal.fire({
+title: "il faut remplir votre fonction " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+}
+
+else if( nom_entreprise == ''){
+swal.fire({
+title: "il faut remplir le nom d'entreprise " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+
+}  
+else if( groupe_s == ''){
+swal.fire({
+title: "il faut remplir le groupe_s  " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+
+}  
+
+  else if (username != '' && fonction != '' && nom_entreprise != ''&& groupe_s != ''    ) {
+ 
+
+ 
+  var formData = new FormData();
+  formData.append('username', username);
+  formData.append('fonction', fonction);
+  formData.append('nom_entreprise', nom_entreprise);
+  formData.append('groupe_s', groupe_s);
+   formData.append('file', file);
+
+  $.ajax({
+    url: "/admin/edit/"+id,
+    type: "PUT",
+    data: formData,
+    processData: false,
+    contentType: false,
+
+
+    success: function(data) {
+      mytable = $('#empTable').DataTable();
+
+mytable.draw();
+
+let obj = JSON.stringify(data);
+
+// Utilisation de la notation point
+let valeur1 = obj.status; 
+
+
+$('#modifiedUser').modal('hide');
+
+            }
+
+          });
+
+        }
+
+
+    })
+</script>
+       
+
+
+
+<div class="modal fade" id="modalmodifier" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modification</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+<form method="post" action="" id="modifiedUser" enctype="multipart/form-data">
+
+  <div class="modal-body">
+     <div class="mb-3">
+        <label for="formGroupExampleInput" class="form-label text-black" >Nom et prénom :<b style="color:red">*</b></label>
+        <input type="text" class="form-control" id="usernamee" placeholder="Enter votre Nom et prénom" maxlength="60" >
+      </div>
+      <div class="mb-3">
+        <label for="formGroupExampleInput" class="form-label text-black">Fonction :<b style="color:red">*</b></label>
+        <input type="text" class="form-control" id="fonctionn" placeholder="Enter votre Fonction"  maxlength="70">
+      </div>
+      <div class="mb-3">
+        <label for="formGroupExampleInput" class="form-label text-black">Nom de l'entreprise :<b style="color:red">*</b></label>
+        <input type="text" class="form-control" id="nom_entreprisee" placeholder="Example votre nom de l'entreprise"  maxlength="70">
+      </div>
+      <div class="mb-3">
+        <label for="formGroupExampleInput" class="form-label text-black">Groupe s. :<b style="color:red">*</b></label>
+         <select name="" id="groupe_ss" class="form-select">
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+  
+        </select>
+    </div>
+      
+      <div class="mb-3">
+        <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
+        <input type="file" class="form-control" name="file" id="filee">
+      </div>
+      <input type="hidden" id="id" />
+      <center><button type="submit" class="btn btn-primary">Modifier</button>
+      </center>
+  </div>
+       <div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+  </div>
+  </div>
+  </div>
+  </div>
+  </form>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+</body>
+</html>
