@@ -14,6 +14,7 @@ def index():
     if(request.cookies.get('btph@groupe-hasnaoui.com')):
         response = redirect(url_for("dashboard.ff"))
         return response
+     
     else:
         return render_template('index.html',error='')
 @login.route('/login', methods=['POST','GET'])

@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  flask:
+    build: .
+    image: mycard
+    container_name: mycard
+    restart: unless-stopped
+    ports:
+      - "5555:5000"
+    depends_on:
+      - sql
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 
+      MYSQL_HOST: 'sql'
+      MYSQL_DB: 'btph'
+
+  sql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: btph
