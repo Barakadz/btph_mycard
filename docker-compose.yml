@@ -9,15 +9,24 @@ services:
     ports:
       - "5555:5000"
     depends_on:
-      - sql
-    environment:
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 
-      MYSQL_HOST: 'sql'
-      MYSQL_DB: 'btph'
+      - mysql-db'
 
-  sql:
+  mysql-db:
     image: mysql:5.7
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_ROOT_PASSWORD: ''
       MYSQL_DATABASE: btph
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ''
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_ARBITRARY: 1
+      MYSQL_ROOT_PASSWORD: ''
+    depends_on:
+      - mysql-db
