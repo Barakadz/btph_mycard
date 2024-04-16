@@ -6,13 +6,15 @@ services:
     image: mycard
     container_name: mycard
     restart: unless-stopped
-    ports:
+    ports: 
       - "5555:5000"
     depends_on:
-      - mysql-db'
+      - mysql-db
 
   mysql-db:
     image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ''
       MYSQL_DATABASE: btph
