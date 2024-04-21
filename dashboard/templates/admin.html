@@ -61,6 +61,8 @@
           <option value="A-">A-</option>
           <option value="O+">O+</option>
           <option value="O-">O-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
 
       </select>
   </div>
@@ -68,6 +70,16 @@
     <div class="mb-3">
       <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
       <input type="file" class="form-control" name="file" id="file">
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Sous Traitont :<b style="color:red">*</b></label>
+      <div class="d-flex">
+      <input type="radio" id="option1" name="radioGroup" value="non">
+<label for="option1" style="color: black !important;">Non</label><br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="radio" id="option2" name="radioGroup" value="oui">
+<label for="option2" style="color: black !important;">Oui</label><br>
+</div>  
     </div>
     <center><button type="submit" class="btn btn-primary">Ajouter</button>
     </center>
@@ -224,7 +236,7 @@ $('#empTable').on('click', '.badge ', function(e) {
       var fonction = $(this).data('fonction');
       var nom_entreprise = $(this).data('nom_entreprise');
        var groupe = $(this).data('grouppe');
-
+       var selectedValue = $('input[name="radioGroup"]:checked').val();
       $.ajax({
 
 url: "/admin/image/",
@@ -237,7 +249,8 @@ data: {
     image:image,
     fonction: fonction,
     nom_entreprise: nom_entreprise ,
-     groupe:groupe
+     groupe:groupe,
+     selectedValue:selectedValue
 },
        
 
@@ -282,6 +295,7 @@ var nom_entreprise = $('#nom_entreprise').val();
 var groupe_s = $('#groupe_s').val();
  var fileInput = $('#file')[0]; // Get the file input element
 var file = fileInput.files[0]; // Get the selected file
+var selectedValue = $('input[name="radioGroup"]:checked').val();
 
 var numberPattern = /^[0-9]+$/;
  if(groupe_s==''){
@@ -344,6 +358,7 @@ dangerMode: true,
   formData.append('nom_entreprise', nom_entreprise);
   formData.append('groupe_s', groupe_s);
    formData.append('file', file);
+   formData.append('selectedValue', selectedValue);
 
   $.ajax({
     url: "/admin/add",

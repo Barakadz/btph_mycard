@@ -1,32 +1,30 @@
-version: '3'
+version: '3.8'
 
 services:
   flask:
     build: .
-    image: mycard
-    container_name: mycard
-    restart: unless-stopped
-    ports: 
-      - "5555:5000"
-    depends_on:
-      - mysql-db
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./dashboard:/app/dashboard
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DB=mydatabase
 
-  mysql-db:
+  db:
     image: mysql:5.7
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mypassword
-     
-    ports:
-      - "3306:3306"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydatabase
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    restart: always
     ports:
       - "8080:80"
     environment:
-      PMA_ARBITRARY: 1
-      MYSQL_ROOT_PASSWORD: ''
-    depends_on:
-      - mysql-db
+      - PMA_ARBITRARY=1
+ 

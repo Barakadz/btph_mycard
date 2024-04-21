@@ -12,10 +12,11 @@ app = Flask(__name__)
 
 mysql = MySQL()
 
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'btph'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = 'db'
+
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
+app.config['MYSQL_DATABASE_DB'] = 'mydatabase'
 mysql.init_app(app)
 
  
@@ -33,68 +34,65 @@ def yy(jj):
 
     return render_template('badge.html', image=jj,text=filename_without_extension)
 
- 
-
-@dash.route("/admin/ajaxfile",methods=["POST","GET"])
+@dash.route("/admin/ajaxfile", methods=["POST", "GET"])
 def ajaxfile():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        if request.method == 'POST':
-            draw = request.form['draw'] 
-            row = int(request.form['start'])
-            rowperpage = int(request.form['length'])
-            searchValue = request.form["search[value]"]
-            print(draw)
-            print(row)
-            print(rowperpage)
-            print(searchValue)
- 
-            ## Total number of records without filtering
-            cursor.execute("select count(*) as allcount from mycard")
-            rsallcount = cursor.fetchone()
-            totalRecords = rsallcount['allcount']
-            print(totalRecords) 
- 
-            ## Total number of records with filtering
-            likeString = "%" + searchValue +"%"
-            cursor.execute("SELECT count(*) as allcount from mycard WHERE username LIKE %s OR fonction LIKE %s OR nom_entreprise LIKE %s", (likeString, likeString, likeString))
-            rsallcount = cursor.fetchone()
-            totalRecordwithFilter = rsallcount['allcount']
-            print(totalRecordwithFilter) 
- 
-            ## Fetch records
-            if searchValue=='':
-                cursor.execute("SELECT * FROM mycard ORDER BY id desc limit %s, %s;", (row, rowperpage))
-                employeelist = cursor.fetchall()
-            else:        
-                cursor.execute("SELECT * FROM mycard WHERE username LIKE %s OR fonction LIKE %s OR nom_entreprise LIKE %s limit %s, %s;", (likeString, likeString, likeString, row, rowperpage))
-                employeelist = cursor.fetchall()
- 
-            data = []
-            for row in employeelist:
-                data.append({
-                    'id': row['id'],
-                    'username': row['username'],
-                    'image': row['image'],
-                    'fonction': row['fonction'],
-                    'nom_entreprise': row['nom_entreprise'],
-                    'delete': f'<a href="javascript:void();"   data-id="{row["id"]}" data-groupes="{row["groupe_s"]}"  data-username="{row["username"]}"  data-image="{row["image"]}"  data-fonction="{row["fonction"]}"  data-nom_entreprise="{row["nom_entreprise"]}"    class="btn btn-info btn-sm editbtn" >Modifier</a><a href="javascript:void();"   data-id="{row["id"]}" class="btn btn-danger btn-sm deleteBtn" >supprimer</a><a href="javascript:void();"   data-id="{row["id"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}"  data-grouppe="{row["groupe_s"]}"  class="btn btn-success btn-sm badge" >Générer un badge</a>',
 
-                })
- 
+        if request.method == "POST":
+            draw = request.form["draw"]
+            start = int(request.form["start"])
+            length = int(request.form["length"])
+            search_value = request.form["search[value]"]
+
+            like_string = "%" + search_value + "%"
+            cursor.execute(
+                "SELECT count(*) as allcount from mycard WHERE username LIKE %s OR fonction LIKE %s OR nom_entreprise LIKE %s",
+                (like_string, like_string, like_string),
+            )
+            rs_all_count = cursor.fetchone()
+            total_records = rs_all_count["allcount"]
+
+            if search_value == "":
+                cursor.execute(
+                    "SELECT * FROM mycard ORDER BY id DESC LIMIT %s, %s;",
+                    (start, length),
+                )
+            else:
+                cursor.execute(
+                    "SELECT * FROM mycard WHERE username LIKE %s OR fonction LIKE %s OR nom_entreprise LIKE %s ORDER BY id DESC LIMIT %s, %s;",
+                    (like_string, like_string, like_string, start, length),
+                )
+            employee_list = cursor.fetchall()
+
+            data = []
+            for row in employee_list:
+                data.append(
+                    {
+                        "id": row["id"],
+                        "username": row["username"],
+                        "image": row["image"],
+                        "fonction": row["fonction"],
+                        "nom_entreprise": row["nom_entreprise"],
+                        "delete": f'<a href="javascript:void();" data-id="{row["id"]}" data-groupes="{row["groupe_s"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" class="btn btn-info btn-sm editbtn">Modifier</a><a href="javascript:void();" data-id="{row["id"]}" class="btn btn-danger btn-sm deleteBtn">Supprimer</a><a href="javascript:void();" data-id="{row["id"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" data-grouppe="{row["groupe_s"]}" class="btn btn-success btn-sm badge">Générer un badge</a>',
+                    }
+                )
+
             response = {
-                'draw': draw,
-                'iTotalRecords': totalRecords,
-                'iTotalDisplayRecords': totalRecordwithFilter,
-                'aaData': data,
+                "draw": draw,
+                "iTotalRecords": total_records,
+                "iTotalDisplayRecords": total_records,
+                "aaData": data,
             }
             return jsonify(response)
     except Exception as e:
         print(e)
+        return jsonify({"error": "An error occurred"})
     finally:
-        cursor.close() 
+        cursor.close()
         conn.close()
+
 
 @dash.route("/admin/add", methods=["POST"])
 def add_employee():
@@ -112,6 +110,8 @@ def add_employee():
                 fonction = request.form.get('fonction')
                 nom_entreprise = request.form.get('nom_entreprise')
                 groupe_s = request.form.get('groupe_s')
+                selectedValue = request.form.get('selectedValue')
+
                 if 'file' not in request.files:
                     return 'No file part'
                 file = request.files['file']
@@ -119,7 +119,7 @@ def add_employee():
                     return 'No selected file'
                 # Save the file to a desired location
                 file.save('dashboard/static/images/' + file.filename)
-                cursor.execute("INSERT INTO mycard (username, image, fonction, nom_entreprise, groupe_s) VALUES (%s, %s, %s, %s, %s)", (username, file.filename, fonction, nom_entreprise, groupe_s))
+                cursor.execute("INSERT INTO mycard (username, image, fonction, nom_entreprise, groupe_s,sou_traitont) VALUES (%s, %s, %s, %s, %s, %s)", (username, file.filename, fonction, nom_entreprise, groupe_s,selectedValue))
                 conn.commit()
                 data = {'status': 'true'}
                 return jsonify(data)
@@ -198,103 +198,78 @@ def round_image(image, radius):
     return result
 @dash.route('/admin/image/', methods=["POST"])
 def add_text_to_image():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        imageuser = request.form.get('image')
-        fonction = request.form.get('fonction')
-        nom_entreprise = request.form.get('nom_entreprise')
-        groupe = request.form.get('groupe')
+    try:
+        if request.method == 'POST':
+            username = request.form.get('username')
+            imageuser = request.form.get('image')
+            fonction = request.form.get('fonction')
+            nom_entreprise = request.form.get('nom_entreprise')
+            groupe = request.form.get('groupe')
+            slctedValue = request.form.get('selectedValue')
 
-    # Load the image
-        image_path = './rectoo.jpg'
-        image = Image.open(image_path)
+            # Load the image
+            image_path = os.path.join(os.getcwd(), 'dashboard/static/','rectoo.jpg')
+            image = Image.open(image_path)
 
-        # Add text to the image
-        draw = ImageDraw.Draw(image)
-        #text = "Baraka abbes ibrahim"
-        font = ImageFont.truetype("arial.ttf", 32)
- 
-        draw.text((60, 220), username, font=font,  fill=(0, 0, 0))
+            # Add text to the image
+            draw = ImageDraw.Draw(image)
+              # You can also specify a font file here
 
-        #textt = "Ingénieur de développement \n informatique"
-        fontt = ImageFont.truetype("arial.ttf", 30)
-        result = insert_line_break(fonction)
-        draw.text((60, 280), result, font=fontt,  fill=(0, 0, 0))
+            font_path = "dashboard/static/Roboto-Regular.ttf"
+            font = ImageFont.truetype(font_path, 32)
+            #font = ImageFont.truetype(font_path, 32)
 
+            draw.text((60, 220), username, font=font, fill=(0, 0, 0))
 
-        #texttt = "A +"
-        fonttt = ImageFont.truetype("arial.ttf", 30)
-        draw.text((120, 428), groupe, font=fonttt,  fill=(0, 0, 0))
+            fontt =ImageFont.truetype(font_path, 32)
+            result = insert_line_break(fonction)
+            draw.text((60, 280), result, font=fontt, fill=(0, 0, 0))
 
+            fonttt =ImageFont.truetype(font_path, 32)
+            draw.text((120, 428), groupe, font=fonttt, fill=(0, 0, 0))
 
-        #textttt = "Groupe des sociétés HASNAOUI"
-        fontttt = ImageFont.truetype("arial.ttf", 30)
-        draw.text((120, 500), nom_entreprise, font=fontttt,  fill=(0, 0, 0))
+            fontttt =ImageFont.truetype(font_path, 32)
+            draw.text((120, 500), nom_entreprise, font=fontttt, fill=(0, 0, 0))
+            if(slctedValue=='oui'):
+                tt =ImageFont.truetype(font_path, 34)
+                draw.text((60, 100), 'Sous Traitont', font=tt, fill=(0, 0, 0))
+            else:
+                image_logo = Image.open(os.path.join(os.getcwd(), 'dashboard/static/','logo_btph.jpg'))
+                image_logo_resize = image_logo.resize((140, 140))  # Resize as needed
+                image.paste(image_logo_resize, (60, 58))
+            # Resize and paste the user image
+            image_user = Image.open(os.path.join(os.getcwd(), 'dashboard/static/images/', imageuser))
+            image_user_resize = image_user.resize((255, 255))  # Resize as needed
+            image.paste(image_user_resize, (810, 120))
 
-        image_user=Image.open('dashboard/static/images/' + imageuser )
-        image_user_resize = image_user.resize((255, 255))  # Resize as needed
+            # Generate and paste QR code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data('Sous Traitont :\n' + username + '\n' + fonction)  # URL or text you want to encode
+            qr.make(fit=True)
+            qr_image = qr.make_image(fill_color="black", back_color="white")
+            qr_image_resized = qr_image.resize((110, 110))  # Resize as needed
+            image.paste(qr_image_resized, (980, 531))  # Position QR code on the image
 
-  
-        
+            # Save the modified image
+            image_path_modified = os.path.join(os.getcwd(), 'dashboard/static/images/badge/', username + '.jpg')
+            image.save(image_path_modified, 'JPEG')
 
-              
-       
-        jjo= image_user_resize 
- 
-        image.paste(jjo, (810, 120) )
-
-        
-        # Generate QR code
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data('Sous Traitont :\n'+username+'\n'+fonction)  # URL or text you want to encode
-        qr.make(fit=True)
-        qr_image = qr.make_image(fill_color="black", back_color="white")
-        qr_image_resized = qr_image.resize((110, 110))  # Resize as needed
-        image.paste(qr_image_resized, (980, 531))  # Position QR code on the image
-
-        # Add text to the image
-        draw = ImageDraw.Draw(image)
-
-        # Serve the modified image
-        img_io = io.BytesIO()
-        image.save(img_io, 'JPEG')
-        img_io.seek(0)
-        image_bytes = img_io.getvalue()
-        name=username+'.jpg'
-         # Save the modified image to the uploads folder
-        image_path = os.path.join('dashboard/static/images/badge/', name)
-        image.save(image_path, 'JPEG')
-
-        # Return the modified image as a downloadable attachment
-        send_file(
-            io.BytesIO(image_bytes),
-            mimetype='image/jpeg',
-             
-        )
-        return redirect(url_for('dashboard.yy', jj=username))
-
-
-
-
-
-
-
-
-
-
-
-
+            # Serve the modified image
+            return send_file(image_path_modified, mimetype='image/jpeg')
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "An error occurred"})
 
 
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')
 
 
 
