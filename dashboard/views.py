@@ -232,7 +232,7 @@ def add_text_to_image():
             draw.text((120, 500), nom_entreprise, font=fontttt, fill=(0, 0, 0))
             if(slctedValue=='oui'):
                 tt =ImageFont.truetype(font_path, 34)
-                draw.text((60, 100), 'Sous Traitont', font=tt, fill=(0, 0, 0))
+                draw.text((60, 100), 'Sous Traitant', font=tt, fill=(0, 0, 0))
             else:
                 image_logo = Image.open(os.path.join(os.getcwd(), 'dashboard/static/','logo_btph.jpg'))
                 image_logo_resize = image_logo.resize((140, 140))  # Resize as needed
