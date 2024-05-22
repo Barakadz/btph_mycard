@@ -29,13 +29,13 @@
          <div >
  
 
-          <center><button  class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#exampleModall">Ajouter un Sous Traitant</button></center>
+          <center><button  class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#exampleModall">Ajouter</button></center>
           <!-- Modal -->
 <div class="modal fade" id="exampleModall" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 <div class="modal-dialog ">
 <div class="modal-content">
 <div class="modal-header">
-<h1 class="modal-title fs-5" id="exampleModalLabel">Sous traitont </h1>
+<h1 class="modal-title fs-5" id="exampleModalLabel">Utilisateur </h1>
 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form method="post" action="" id="addUser" enctype="multipart/form-data">
@@ -50,8 +50,8 @@
       <input type="text" class="form-control" id="fonction" placeholder="Enter votre Fonction"  maxlength="70" required>
     </div>
     <div class="mb-3">
-      <label for="formGroupExampleInput" class="form-label text-black">Nom de l'entreprise :<b style="color:red">*</b></label>
-      <input type="text" class="form-control" id="nom_entreprise" placeholder="Example votre nom de l'entreprise"  maxlength="70" required>
+      <label for="formGroupExampleInput" class="form-label text-black">Département :<b style="color:red">*</b></label>
+      <input type="text" class="form-control" id="nom_entreprise" placeholder="Enter Département"  maxlength="70" required>
     </div>
     <div class="mb-3">
       <label for="formGroupExampleInput" class="form-label text-black">Groupe s. :<b style="color:red">*</b></label>
@@ -59,6 +59,8 @@
           <option value=""></option>
           <option value="A+">A+</option>
           <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
           <option value="O+">O+</option>
           <option value="O-">O-</option>
           <option value="AB+">AB+</option>
@@ -66,19 +68,26 @@
 
       </select>
   </div>
+  <div class="mb-3">
+    <label for="formGroupExampleInput" class="form-label text-black">Mail :<b style="color:red">*</b></label>
+
+    <input type="email" class="form-control" id="mail" placeholder="Enter un Mail" style="color: black !important;" maxlength="320" required>
+
+  </div>
     
     <div class="mb-3">
       <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
       <input type="file" class="form-control" name="file" id="file">
     </div>
+    
     <div class="mb-3">
-      <label for="formGroupExampleInput" class="form-label text-black">Sous Traitont :<b style="color:red">*</b></label>
+      <label for="formGroupExampleInput" class="form-label text-black">Sous-Traitant :<b style="color:red">*</b></label>
       <div class="d-flex">
       <input type="radio" id="option1" name="radioGroup" value="non">
-<label for="option1" style="color: black !important;">Non</label><br>
+<label for="option1" style="color: black !important;cursor: pointer;">Non</label><br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input type="radio" id="option2" name="radioGroup" value="oui">
-<label for="option2" style="color: black !important;">Oui</label><br>
+<label for="option2" style="color: black !important;cursor: pointer;">Oui</label><br>
 </div>  
     </div>
     <center><button type="submit" class="btn btn-primary">Ajouter</button>
@@ -99,8 +108,9 @@
                     <th>Username</th>
                     <th>Image</th>
                     <th>Fonction</th>
-                    <th>Groupe_s</th>
-                    <th>Nom_entreprise</th>
+                     <th>Département</th>
+                    <th>Mail</th>
+                    <th>Sous-Traitant</th>
 
                     <th>Options</th>
 
@@ -154,7 +164,8 @@ $(document).ready(function() {
                     },
                     { data: 'fonction' },
                     { data: 'nom_entreprise' },
-                    { data: 'nom_entreprise' },
+                     { data: 'mail' },
+                     { data: 'sou_traitont' },
 
                     { data: 'delete' },
                 ]
@@ -169,7 +180,7 @@ $('#empTable').on('click', '.deleteBtn ', function(e) {
       var id = $(this).data('id');
  
       Swal.fire({
-  title: "<h5 style='color:black !important'>voulez-vous supprimer cet sous traitont?</h5>",
+  title: "<h5 style='color:black !important'>voulez-vous supprimer cet utilisateur?</h5>",
   showDenyButton: "Non",
   showCancelButton: true,
   confirmButtonText: "Oui",
@@ -192,7 +203,7 @@ var statuse = json.status;
 
 
 swal.fire({
-title: "Sous traitont à été bien supprimer" ,
+title: "utilisateur à été bien supprimer" ,
 text: "",
 icon: "success",
 buttons: true,
@@ -236,8 +247,12 @@ $('#empTable').on('click', '.badge ', function(e) {
       var fonction = $(this).data('fonction');
       var nom_entreprise = $(this).data('nom_entreprise');
        var groupe = $(this).data('grouppe');
-       var selectedValue = $('input[name="radioGroup"]:checked').val();
-      $.ajax({
+       var mail = $(this).data('mail');
+       var selectedValue = $(this).data('traitont');
+
+       
+
+       $.ajax({
 
 url: "/admin/image/",
 
@@ -250,12 +265,14 @@ data: {
     fonction: fonction,
     nom_entreprise: nom_entreprise ,
      groupe:groupe,
-     selectedValue:selectedValue
+     selectedValue:selectedValue,
+
+     mail:mail
 },
        
 
 success: function(data) {
-  window.location.href = "/admin/badge/" + encodeURIComponent(username+'.jpg');
+  window.location.href = "/admin/badge/" + encodeURIComponent(username+'.jpg')+"&&traitont="+selectedValue;
 
 
 
@@ -292,6 +309,8 @@ $(document).on('submit', '#addUser', function(e) {
 var username = $('#username').val();
 var fonction = $('#fonction').val();
 var nom_entreprise = $('#nom_entreprise').val();
+var mail = $('#mail').val();
+
 var groupe_s = $('#groupe_s').val();
  var fileInput = $('#file')[0]; // Get the file input element
 var file = fileInput.files[0]; // Get the selected file
@@ -330,14 +349,23 @@ dangerMode: true,
 
 else if( nom_entreprise == ''){
 swal.fire({
-title: "il faut remplir le nom d'entreprise " ,
+title: "il faut remplir le Département " ,
 text: "",
 icon: "warning",
 buttons: true,
 dangerMode: true,
 })
 
-}  
+}else if(mail==''){
+
+swal.fire({
+title: "il faut choisir le Groupe s " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+} 
 else if( groupe_s == ''){
 swal.fire({
 title: "il faut remplir le groupe_s  " ,
@@ -348,7 +376,7 @@ dangerMode: true,
 })
 
 }  
-  else if (username != ''     &&fonction != '' && nom_entreprise != ''&& groupe_s != ''  ) {
+  else if (username != ''     &&fonction != '' && nom_entreprise != ''&& groupe_s != '' && mail != ''  ) {
  
 
  
@@ -356,6 +384,8 @@ dangerMode: true,
   formData.append('username', username);
   formData.append('fonction', fonction);
   formData.append('nom_entreprise', nom_entreprise);
+  formData.append('mail', mail);
+
   formData.append('groupe_s', groupe_s);
    formData.append('file', file);
    formData.append('selectedValue', selectedValue);
@@ -377,7 +407,7 @@ mytable.draw();
  if(status=='true'){
 
   swal.fire({
-title: "<h3 style='color:black !important'>Sous traitons, c'était Bien Ajouté</h3>" ,
+title: "<h3 style='color:black !important'>Utilisateur à été Bien Ajouté</h3>" ,
 text: "",
 icon: "success",
 buttons: true,
@@ -386,7 +416,7 @@ dangerMode: true,
  }else{
 
   swal.fire({
-title: "<h3 style='color:black !important'>cet sous traitont est déjà existé</h3>" ,
+title: "<h3 style='color:black !important'>cet utilisateur est déjà existe</h3>" ,
 text: "",
 icon: "error",
 buttons: true,
@@ -422,6 +452,8 @@ $('#empTable').on('click', '.editbtn ', function(event) {
       var fonction = $(this).data('fonction');
       var nom_entreprise = $(this).data('nom_entreprise');
        var groupe_ss = $(this).data('groupes');
+       var mail = $(this).data('mail');
+
       var id = $(this).data('id');
 
       $('#modalmodifier').modal('show');
@@ -431,6 +463,8 @@ $('#empTable').on('click', '.editbtn ', function(event) {
       $('#fonctionn').val(fonction);
       $('#nom_entreprisee').val(nom_entreprise);
        $('#groupe_ss').val(groupe_ss);
+       $('#maill').val(mail);
+
     });
 
 
@@ -444,6 +478,8 @@ var username = $('#usernamee').val();
 var fonction = $('#fonctionn').val();
 var nom_entreprise = $('#nom_entreprisee').val();
 var groupe_s = $('#groupe_ss').val();
+var mail = $('#maill').val();
+
  var fileInput = $('#filee')[0]; // Get the file input element
 var file = fileInput.files[0]; // Get the selected file
 
@@ -498,8 +534,17 @@ dangerMode: true,
 })
 
 }  
+else if(mail==''){
 
-  else if (username != '' && fonction != '' && nom_entreprise != ''&& groupe_s != ''    ) {
+swal.fire({
+title: "il faut remplir le Mail " ,
+text: "",
+icon: "warning",
+buttons: true,
+dangerMode: true,
+})
+}
+  else if (username != '' && fonction != '' && nom_entreprise != ''&& groupe_s != '' && mail!=""   ) {
  
 
  
@@ -508,6 +553,8 @@ dangerMode: true,
   formData.append('fonction', fonction);
   formData.append('nom_entreprise', nom_entreprise);
   formData.append('groupe_s', groupe_s);
+  formData.append('mail', mail);
+
    formData.append('file', file);
 
   $.ajax({
@@ -570,18 +617,27 @@ $('#modifiedUser').modal('hide');
       </div>
       <div class="mb-3">
         <label for="formGroupExampleInput" class="form-label text-black">Groupe s. :<b style="color:red">*</b></label>
-         <select name="" id="groupe_ss" class="form-select">
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
+         <select name="" id="groupe_ss" class="form-select" required>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+
   
         </select>
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Mail :<b style="color:red">*</b></label>
+      <input type="text" class="form-control" id="maill" placeholder="Example votre nom de l'entreprise"  maxlength="270"required>
     </div>
       
       <div class="mb-3">
         <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
-        <input type="file" class="form-control" name="file" id="filee">
+        <input type="file" class="form-control" name="file" id="filee" required>
       </div>
       <input type="hidden" id="id" />
       <center><button type="submit" class="btn btn-primary">Modifier</button>

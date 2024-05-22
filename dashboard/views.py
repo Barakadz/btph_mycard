@@ -6,6 +6,7 @@ import pymysql
 import qrcode
 import os
 
+
 dash=Blueprint('dashboard', __name__,template_folder='templates',static_folder='static', static_url_path='/dashboard/static')
 
 app = Flask(__name__)
@@ -31,8 +32,20 @@ def hj():
 @dash.route('/admin/badge/<string:jj>', methods=["GET"])
 def yy(jj):
     filename_without_extension = jj.split(".")[0]
+    clean_url = jj.split("&&")[0]
+        # Split the URL by the '&&' delimiter
+    parts = jj.split('&&')
 
-    return render_template('badge.html', image=jj,text=filename_without_extension)
+    # Initialize the value of 'traitont' to None
+    traitont_value = None
+
+    # Loop through the parts to find the 'traitont' parameter
+    for part in parts:
+        if 'traitont=' in part:
+            # Split the part by '=' to get the value of 'traitont'
+            traitont_value = part.split('=')[1]
+            break
+    return render_template('badge.html', image=clean_url,traitont=traitont_value,text=filename_without_extension)
 
 @dash.route("/admin/ajaxfile", methods=["POST", "GET"])
 def ajaxfile():
@@ -75,7 +88,10 @@ def ajaxfile():
                         "image": row["image"],
                         "fonction": row["fonction"],
                         "nom_entreprise": row["nom_entreprise"],
-                        "delete": f'<a href="javascript:void();" data-id="{row["id"]}" data-groupes="{row["groupe_s"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" class="btn btn-info btn-sm editbtn">Modifier</a><a href="javascript:void();" data-id="{row["id"]}" class="btn btn-danger btn-sm deleteBtn">Supprimer</a><a href="javascript:void();" data-id="{row["id"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" data-grouppe="{row["groupe_s"]}" class="btn btn-success btn-sm badge">Générer un badge</a>',
+                        "mail": row["mail"],
+                        "sou_traitont": row["sou_traitont"],
+
+                        "delete": f'<a href="javascript:void();" data-id="{row["id"]}" data-mail="{row["mail"]}" data-groupes="{row["groupe_s"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" class="btn btn-info btn-sm editbtn">Modifier</a><a href="javascript:void();" data-id="{row["id"]}" class="btn btn-danger btn-sm deleteBtn">Supprimer</a><a href="javascript:void();" data-id="{row["id"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" data-grouppe="{row["groupe_s"]}" data-mail="{row["mail"]}" data-traitont="{row["sou_traitont"]}" class="btn btn-success btn-sm badge">Générer un badge</a>',
                     }
                 )
 
@@ -111,6 +127,7 @@ def add_employee():
                 nom_entreprise = request.form.get('nom_entreprise')
                 groupe_s = request.form.get('groupe_s')
                 selectedValue = request.form.get('selectedValue')
+                mail = request.form.get('mail')
 
                 if 'file' not in request.files:
                     return 'No file part'
@@ -119,7 +136,7 @@ def add_employee():
                     return 'No selected file'
                 # Save the file to a desired location
                 file.save('dashboard/static/images/' + file.filename)
-                cursor.execute("INSERT INTO mycard (username, image, fonction, nom_entreprise, groupe_s,sou_traitont) VALUES (%s, %s, %s, %s, %s, %s)", (username, file.filename, fonction, nom_entreprise, groupe_s,selectedValue))
+                cursor.execute("INSERT INTO mycard (username, image, fonction, nom_entreprise, groupe_s,sou_traitont,mail) VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, file.filename, fonction, nom_entreprise, groupe_s,selectedValue,mail))
                 conn.commit()
                 data = {'status': 'true'}
                 return jsonify(data)
@@ -143,6 +160,8 @@ def edit_user(id):
             fonction = request.form.get('fonction')
             nom_entreprise = request.form.get('nom_entreprise')
             groupe_s = request.form.get('groupe_s')
+            mail = request.form.get('mail')
+
             if 'file' not in request.files:
                 return 'No file part'
             file = request.files['file']
@@ -150,7 +169,7 @@ def edit_user(id):
                 return 'No selected file'
                 # Save the file to a desired location
             file.save('dashboard/static/images/' + file.filename)
-            cursor.execute("UPDATE mycard SET username=%s ,fonction=%s,nom_entreprise=%s,groupe_s=%s,image=%s WHERE id=%s;", (username,fonction,nom_entreprise,groupe_s, file.filename, id))
+            cursor.execute("UPDATE mycard SET username=%s ,fonction=%s,nom_entreprise=%s,groupe_s=%s,mail=%s,image=%s WHERE id=%s;", (username,fonction,nom_entreprise,groupe_s,mail, file.filename, id))
             conn.commit()
             return jsonify({'message': 'User updated successfully'})
     except Exception as e:
@@ -185,7 +204,7 @@ def delete_employee(id):
 def insert_line_break(phrase):
     words = phrase.split()
     if len(words) > 4:
-        index = phrase.find(words[4])
+        index = phrase.find(words[6])
         return phrase[:index] + '\n' + phrase[index:]
     return phrase
 def round_image(image, radius):
@@ -203,12 +222,13 @@ def add_text_to_image():
             username = request.form.get('username')
             imageuser = request.form.get('image')
             fonction = request.form.get('fonction')
-            nom_entreprise = request.form.get('nom_entreprise')
+            nom_departement = request.form.get('nom_entreprise')
             groupe = request.form.get('groupe')
+            mail = request.form.get('mail')
             slctedValue = request.form.get('selectedValue')
 
             # Load the image
-            image_path = os.path.join(os.getcwd(), 'dashboard/static/','rectoo.jpg')
+            image_path = os.path.join(os.getcwd(), 'dashboard/static/','rectoo.png')
             image = Image.open(image_path)
 
             # Add text to the image
@@ -219,28 +239,29 @@ def add_text_to_image():
             font = ImageFont.truetype(font_path, 32)
             #font = ImageFont.truetype(font_path, 32)
 
-            draw.text((60, 220), username, font=font, fill=(0, 0, 0))
+            draw.text((30, 360), username, font=font, fill=(0, 0, 0))
 
             fontt =ImageFont.truetype(font_path, 32)
             result = insert_line_break(fonction)
-            draw.text((60, 280), result, font=fontt, fill=(0, 0, 0))
+            draw.text((30, 410), result, font=fontt, fill=(0, 0, 0))
 
             fonttt =ImageFont.truetype(font_path, 32)
-            draw.text((120, 428), groupe, font=fonttt, fill=(0, 0, 0))
+            draw.text((30, 540), groupe, font=fonttt, fill=(0, 0, 0))
+            draw.text((30, 590), mail, font=fonttt, fill=(0, 0, 0))
 
             fontttt =ImageFont.truetype(font_path, 32)
-            draw.text((120, 500), nom_entreprise, font=fontttt, fill=(0, 0, 0))
+            draw.text((30, 460), nom_departement, font=fontttt, fill=(0, 0, 0))
             if(slctedValue=='oui'):
                 tt =ImageFont.truetype(font_path, 34)
-                draw.text((60, 100), 'Sous Traitant', font=tt, fill=(0, 0, 0))
+                draw.text((30, 24), 'Sous-Traitant', font=tt, fill=(0, 0, 0))
             else:
                 image_logo = Image.open(os.path.join(os.getcwd(), 'dashboard/static/','logo_btph.jpg'))
-                image_logo_resize = image_logo.resize((140, 140))  # Resize as needed
-                image.paste(image_logo_resize, (60, 58))
+                image_logo_resize = image_logo.resize((220, 190))  # Resize as needed
+                image.paste(image_logo_resize, (560, 108))
             # Resize and paste the user image
             image_user = Image.open(os.path.join(os.getcwd(), 'dashboard/static/images/', imageuser))
             image_user_resize = image_user.resize((255, 255))  # Resize as needed
-            image.paste(image_user_resize, (810, 120))
+            image.paste(image_user_resize, (30, 80))
 
             # Generate and paste QR code
             qr = qrcode.QRCode(
@@ -253,7 +274,7 @@ def add_text_to_image():
             qr.make(fit=True)
             qr_image = qr.make_image(fill_color="black", back_color="white")
             qr_image_resized = qr_image.resize((110, 110))  # Resize as needed
-            image.paste(qr_image_resized, (980, 531))  # Position QR code on the image
+            #image.paste(qr_image_resized, (980, 531))  # Position QR code on the image
 
             # Save the modified image
             image_path_modified = os.path.join(os.getcwd(), 'dashboard/static/images/badge/', username + '.jpg')
