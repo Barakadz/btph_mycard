@@ -24,4 +24,10 @@ services:
       - "8057:80"
     environment:
       - PMA_ARBITRARY=1
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.75.0/24
  
