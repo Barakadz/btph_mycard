@@ -91,7 +91,7 @@ def ajaxfile():
                         "mail": row["mail"],
                         "sou_traitont": row["sou_traitont"],
 
-                        "delete": f'<a href="javascript:void();" data-id="{row["id"]}" data-mail="{row["mail"]}" data-groupes="{row["groupe_s"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" class="btn btn-info btn-sm editbtn">Modifier</a><a href="javascript:void();" data-id="{row["id"]}" class="btn btn-danger btn-sm deleteBtn">Supprimer</a><a href="javascript:void();" data-id="{row["id"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" data-grouppe="{row["groupe_s"]}" data-mail="{row["mail"]}" data-traitont="{row["sou_traitont"]}" class="btn btn-success btn-sm badge">Générer un badge</a>',
+                        "delete": f'<a href="javascript:void();" data-id="{row["id"]}" data-matricule="{row["matricule"]}" data-mail="{row["mail"]}" data-groupes="{row["groupe_s"]}" data-username="{row["username"]}" data-image="{row["image"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" class="btn btn-info btn-sm editbtn">Modifier</a><a href="javascript:void();" data-id="{row["id"]}" class="btn btn-danger btn-sm deleteBtn">Supprimer</a><a href="javascript:void();" data-id="{row["id"]}" data-username="{row["username"]}" data-image="{row["image"]}"data-matricule="{row["matricule"]}" data-fonction="{row["fonction"]}" data-nom_entreprise="{row["nom_entreprise"]}" data-grouppe="{row["groupe_s"]}" data-mail="{row["mail"]}" data-traitont="{row["sou_traitont"]}" class="btn btn-success btn-sm badge">Générer un badge</a>',
                     }
                 )
 
@@ -128,6 +128,7 @@ def add_employee():
                 groupe_s = request.form.get('groupe_s')
                 selectedValue = request.form.get('selectedValue')
                 mail = request.form.get('mail')
+                matricule = request.form.get('matricule')
 
                 if 'file' not in request.files:
                     return 'No file part'
@@ -136,7 +137,7 @@ def add_employee():
                     return 'No selected file'
                 # Save the file to a desired location
                 file.save('dashboard/static/images/' + file.filename)
-                cursor.execute("INSERT INTO mycard (username, image, fonction, nom_entreprise, groupe_s,sou_traitont,mail) VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, file.filename, fonction, nom_entreprise, groupe_s,selectedValue,mail))
+                cursor.execute("INSERT INTO mycard (username, image, fonction, nom_entreprise, groupe_s,sou_traitont,mail,matricule) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", (username, file.filename, fonction, nom_entreprise, groupe_s,selectedValue,mail,matricule))
                 conn.commit()
                 data = {'status': 'true'}
                 return jsonify(data)
@@ -161,6 +162,7 @@ def edit_user(id):
             nom_entreprise = request.form.get('nom_entreprise')
             groupe_s = request.form.get('groupe_s')
             mail = request.form.get('mail')
+            matricule = request.form.get('matricule')
 
             if 'file' not in request.files:
                 return 'No file part'
@@ -169,7 +171,7 @@ def edit_user(id):
                 return 'No selected file'
                 # Save the file to a desired location
             file.save('dashboard/static/images/' + file.filename)
-            cursor.execute("UPDATE mycard SET username=%s ,fonction=%s,nom_entreprise=%s,groupe_s=%s,mail=%s,image=%s WHERE id=%s;", (username,fonction,nom_entreprise,groupe_s,mail, file.filename, id))
+            cursor.execute("UPDATE mycard SET username=%s ,fonction=%s,nom_entreprise=%s,groupe_s=%s,mail=%s,image=%s,matricule=%s WHERE id=%s;", (username,fonction,nom_entreprise,groupe_s,mail, file.filename,matricule, id))
             conn.commit()
             return jsonify({'message': 'User updated successfully'})
     except Exception as e:
@@ -226,6 +228,7 @@ def add_text_to_image():
             groupe = request.form.get('groupe')
             mail = request.form.get('mail')
             slctedValue = request.form.get('selectedValue')
+            matricule = request.form.get('matricule')
 
             # Load the image
             image_path = os.path.join(os.getcwd(), 'dashboard/static/','rectoo.png')
@@ -235,25 +238,26 @@ def add_text_to_image():
             draw = ImageDraw.Draw(image)
               # You can also specify a font file here
 
-            font_path = "dashboard/static/Roboto-Regular.ttf"
+            font_path = "dashboard/static/Helvetica-Bold.ttf"
             font = ImageFont.truetype(font_path, 32)
             #font = ImageFont.truetype(font_path, 32)
 
-            draw.text((30, 360), username, font=font, fill=(0, 0, 0))
+            draw.text((30, 360), username, font=font, fill=(35,55,141))
 
             fontt =ImageFont.truetype(font_path, 32)
             result = insert_line_break(fonction)
-            draw.text((30, 410), result, font=fontt, fill=(0, 0, 0))
+            draw.text((30, 410), result, font=fontt, fill=(35,55,141))
 
             fonttt =ImageFont.truetype(font_path, 32)
-            draw.text((30, 540), groupe, font=fonttt, fill=(0, 0, 0))
-            draw.text((30, 590), mail, font=fonttt, fill=(0, 0, 0))
+            draw.text((30, 530), groupe, font=fonttt, fill=(0,150,65))
+            draw.text((30, 620), mail, font=fonttt, fill=(0,150,65))
+            draw.text((30, 575), matricule, font=fonttt, fill=(0,150,65))
 
             fontttt =ImageFont.truetype(font_path, 32)
-            draw.text((30, 460), nom_departement, font=fontttt, fill=(0, 0, 0))
+            draw.text((30, 460), nom_departement, font=fontttt, fill=(35,55,141))
             if(slctedValue=='oui'):
                 tt =ImageFont.truetype(font_path, 34)
-                draw.text((30, 24), 'Sous-Traitant', font=tt, fill=(0, 0, 0))
+                draw.text((30, 24), 'Sous-Traitant', font=tt, fill=(35,55,141))
             else:
                 image_logo = Image.open(os.path.join(os.getcwd(), 'dashboard/static/','logo_btph.jpg'))
                 image_logo_resize = image_logo.resize((220, 190))  # Resize as needed

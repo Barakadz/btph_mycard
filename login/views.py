@@ -27,7 +27,7 @@ def index():
     if(request.cookies.get('btph@groupe-hasnaoui.com')):
         
         cursor = mysql.get_db().cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS mycard (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), image VARCHAR(255), fonction VARCHAR(255), nom_entreprise VARCHAR(255), groupe_s VARCHAR(255),sou_traitont VARCHAR(255),mail VARCHAR(255))")
+        cursor.execute("CREATE TABLE IF NOT EXISTS mycard (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), image VARCHAR(255), fonction VARCHAR(255), nom_entreprise VARCHAR(255), groupe_s VARCHAR(255),sou_traitont VARCHAR(255),mail VARCHAR(255),matricule VARCHAR(255))")
         mysql.get_db().commit()
         cursor.close()
 
@@ -36,7 +36,7 @@ def index():
      
     else:
         cursor = mysql.get_db().cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS mycard (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), image VARCHAR(255), fonction VARCHAR(255), nom_entreprise VARCHAR(255), groupe_s VARCHAR(255),sou_traitont VARCHAR(255),mail VARCHAR(255))")
+        cursor.execute("CREATE TABLE IF NOT EXISTS mycard (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), image VARCHAR(255), fonction VARCHAR(255), nom_entreprise VARCHAR(255), groupe_s VARCHAR(255),sou_traitont VARCHAR(255),mail VARCHAR(255),matricule VARCHAR(255))")
         mysql.get_db().commit()
         cursor.close()
  

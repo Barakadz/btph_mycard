@@ -74,7 +74,12 @@
     <input type="email" class="form-control" id="mail" placeholder="Enter un Mail" style="color: black !important;" maxlength="320" required>
 
   </div>
-    
+  <div class="mb-3">
+    <label for="formGroupExampleInput" class="form-label text-black">Matricule :<b style="color:red">*</b></label>
+
+    <input type="text" class="form-control" id="matricule" placeholder="Enter un Matricule" style="color: black !important;" maxlength="320" >
+
+  </div>
     <div class="mb-3">
       <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
       <input type="file" class="form-control" name="file" id="file">
@@ -248,6 +253,8 @@ $('#empTable').on('click', '.badge ', function(e) {
       var nom_entreprise = $(this).data('nom_entreprise');
        var groupe = $(this).data('grouppe');
        var mail = $(this).data('mail');
+       var matricule = $(this).data('matricule');
+
        var selectedValue = $(this).data('traitont');
 
        
@@ -266,6 +273,7 @@ data: {
     nom_entreprise: nom_entreprise ,
      groupe:groupe,
      selectedValue:selectedValue,
+     matricule:matricule,
 
      mail:mail
 },
@@ -310,6 +318,7 @@ var username = $('#username').val();
 var fonction = $('#fonction').val();
 var nom_entreprise = $('#nom_entreprise').val();
 var mail = $('#mail').val();
+var matricule = $('#matricule').val();
 
 var groupe_s = $('#groupe_s').val();
  var fileInput = $('#file')[0]; // Get the file input element
@@ -385,6 +394,7 @@ dangerMode: true,
   formData.append('fonction', fonction);
   formData.append('nom_entreprise', nom_entreprise);
   formData.append('mail', mail);
+  formData.append('matricule', matricule);
 
   formData.append('groupe_s', groupe_s);
    formData.append('file', file);
@@ -453,6 +463,7 @@ $('#empTable').on('click', '.editbtn ', function(event) {
       var nom_entreprise = $(this).data('nom_entreprise');
        var groupe_ss = $(this).data('groupes');
        var mail = $(this).data('mail');
+       var matricule = $(this).data('matricule');
 
       var id = $(this).data('id');
 
@@ -464,6 +475,7 @@ $('#empTable').on('click', '.editbtn ', function(event) {
       $('#nom_entreprisee').val(nom_entreprise);
        $('#groupe_ss').val(groupe_ss);
        $('#maill').val(mail);
+       $('#matricull').val(matricule);
 
     });
 
@@ -479,6 +491,7 @@ var fonction = $('#fonctionn').val();
 var nom_entreprise = $('#nom_entreprisee').val();
 var groupe_s = $('#groupe_ss').val();
 var mail = $('#maill').val();
+var matricule = $('#matriculee').val();
 
  var fileInput = $('#filee')[0]; // Get the file input element
 var file = fileInput.files[0]; // Get the selected file
@@ -554,6 +567,7 @@ dangerMode: true,
   formData.append('nom_entreprise', nom_entreprise);
   formData.append('groupe_s', groupe_s);
   formData.append('mail', mail);
+  formData.append('matricule', matricule);
 
    formData.append('file', file);
 
@@ -632,9 +646,12 @@ $('#modifiedUser').modal('hide');
     </div>
     <div class="mb-3">
       <label for="formGroupExampleInput" class="form-label text-black">Mail :<b style="color:red">*</b></label>
-      <input type="text" class="form-control" id="maill" placeholder="Example votre nom de l'entreprise"  maxlength="270"required>
+      <input type="email" class="form-control" id="maill" placeholder="Example votre nom de l'entreprise"  maxlength="270"required>
     </div>
-      
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label text-black">Matricule :<b style="color:red">*</b></label>
+      <input type="text" class="form-control" id="matriculee" placeholder="Example votre Matricule"  maxlength="270">
+    </div>
       <div class="mb-3">
         <label for="formGroupExampleInput" class="form-label text-black">Image :<b style="color:red">*</b></label>
         <input type="file" class="form-control" name="file" id="filee" required>
