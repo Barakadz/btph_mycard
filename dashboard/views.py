@@ -242,22 +242,22 @@ def add_text_to_image():
             font = ImageFont.truetype(font_path, 32)
             #font = ImageFont.truetype(font_path, 32)
 
-            draw.text((30, 360), username, font=font, fill=(35,55,141))
+            draw.text((50, 360), username, font=font, fill=(35,55,141))
 
             fontt =ImageFont.truetype(font_path, 32)
             result = insert_line_break(fonction)
-            draw.text((30, 410), result, font=fontt, fill=(35,55,141))
+            draw.text((50, 410), result, font=fontt, fill=(35,55,141))
 
             fonttt =ImageFont.truetype(font_path, 32)
-            draw.text((30, 530), groupe, font=fonttt, fill=(0,150,65))
-            draw.text((30, 620), mail, font=fonttt, fill=(0,150,65))
-            draw.text((30, 575), matricule, font=fonttt, fill=(0,150,65))
+            draw.text((50, 530), groupe, font=fonttt, fill=(0,150,65))
+            draw.text((50, 620), mail, font=fonttt, fill=(0,150,65))
+            draw.text((50, 575), matricule, font=fonttt, fill=(0,150,65))
 
             fontttt =ImageFont.truetype(font_path, 32)
-            draw.text((30, 460), nom_departement, font=fontttt, fill=(35,55,141))
+            draw.text((50, 460), nom_departement, font=fontttt, fill=(35,55,141))
             if(slctedValue=='oui'):
                 tt =ImageFont.truetype(font_path, 34)
-                draw.text((30, 24), 'Sous-Traitant', font=tt, fill=(35,55,141))
+                draw.text((50, 24), 'Sous-Traitant', font=tt, fill=(35,55,141))
             else:
                 image_logo = Image.open(os.path.join(os.getcwd(), 'dashboard/static/','logo_btph.jpg'))
                 image_logo_resize = image_logo.resize((220, 190))  # Resize as needed
@@ -265,7 +265,7 @@ def add_text_to_image():
             # Resize and paste the user image
             image_user = Image.open(os.path.join(os.getcwd(), 'dashboard/static/images/', imageuser))
             image_user_resize = image_user.resize((255, 255))  # Resize as needed
-            image.paste(image_user_resize, (30, 80))
+            image.paste(image_user_resize, (50, 80))
 
             # Generate and paste QR code
             qr = qrcode.QRCode(
